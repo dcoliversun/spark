@@ -122,9 +122,9 @@ private[spark] class BasicExecutorFeatureStep(
           Nil
         }
         val userOpts = kubernetesConf.get(EXECUTOR_JAVA_OPTIONS).toSeq.flatMap { opts =>
-        val subsOpts = Utils.substituteAppNExecIds(opts, kubernetesConf.appId,
-          kubernetesConf.executorId)
-          Utils.splitCommandString(subsOpts)
+          val subsOpts = Utils.substituteAppNExecIds(opts, kubernetesConf.appId,
+            kubernetesConf.executorId)
+            Utils.splitCommandString(subsOpts)
         }
         val sparkOpts = Utils.sparkJavaOpts(kubernetesConf.sparkConf,
           SparkConf.isExecutorStartupConf)
