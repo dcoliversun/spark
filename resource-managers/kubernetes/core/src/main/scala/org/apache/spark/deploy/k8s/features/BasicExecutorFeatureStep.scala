@@ -161,7 +161,6 @@ private[spark] class BasicExecutorFeatureStep(
             .build()
         }
       }
-
     executorEnv.find(_.getName == ENV_EXECUTOR_DIRS).foreach { e =>
       e.setValue(e.getValue
         .replaceAll(ENV_APPLICATION_ID, kubernetesConf.appId)
