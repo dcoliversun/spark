@@ -125,7 +125,7 @@ public class SparkFirehoseListener implements SparkListenerInterface {
   }
 
   @Override
-  public final void onExecutorBlacklisted(SparkListenerExecutorBlacklisted executorBlacklisted) {
+  public final void onExecutorBlacklisted(SparkListenerExecutorExcluded executorBlacklisted) {
     onEvent(executorBlacklisted);
   }
 
@@ -136,7 +136,7 @@ public class SparkFirehoseListener implements SparkListenerInterface {
 
   @Override
   public void onExecutorBlacklistedForStage(
-      SparkListenerExecutorBlacklistedForStage executorBlacklistedForStage) {
+      SparkListenerExecutorExcludedForStage executorBlacklistedForStage) {
     onEvent(executorBlacklistedForStage);
   }
 
@@ -148,7 +148,7 @@ public class SparkFirehoseListener implements SparkListenerInterface {
 
   @Override
   public void onNodeBlacklistedForStage(
-      SparkListenerNodeBlacklistedForStage nodeBlacklistedForStage) {
+      SparkListenerNodeExcludedForStage nodeBlacklistedForStage) {
     onEvent(nodeBlacklistedForStage);
   }
 
@@ -160,7 +160,7 @@ public class SparkFirehoseListener implements SparkListenerInterface {
 
   @Override
   public final void onExecutorUnblacklisted(
-      SparkListenerExecutorUnblacklisted executorUnblacklisted) {
+      SparkListenerExecutorUnexcluded executorUnblacklisted) {
     onEvent(executorUnblacklisted);
   }
 
@@ -171,7 +171,7 @@ public class SparkFirehoseListener implements SparkListenerInterface {
   }
 
   @Override
-  public final void onNodeBlacklisted(SparkListenerNodeBlacklisted nodeBlacklisted) {
+  public final void onNodeBlacklisted(SparkListenerNodeExcluded nodeBlacklisted) {
     onEvent(nodeBlacklisted);
   }
 
@@ -181,7 +181,7 @@ public class SparkFirehoseListener implements SparkListenerInterface {
   }
 
   @Override
-  public final void onNodeUnblacklisted(SparkListenerNodeUnblacklisted nodeUnblacklisted) {
+  public final void onNodeUnblacklisted(SparkListenerNodeUnexcluded nodeUnblacklisted) {
     onEvent(nodeUnblacklisted);
   }
 
@@ -200,11 +200,13 @@ public class SparkFirehoseListener implements SparkListenerInterface {
     onEvent(speculativeTask);
   }
 
+  @Override
   public void onUnschedulableTaskSetAdded(
       SparkListenerUnschedulableTaskSetAdded unschedulableTaskSetAdded) {
     onEvent(unschedulableTaskSetAdded);
   }
 
+  @Override
   public void onUnschedulableTaskSetRemoved(
       SparkListenerUnschedulableTaskSetRemoved unschedulableTaskSetRemoved) {
     onEvent(unschedulableTaskSetRemoved);

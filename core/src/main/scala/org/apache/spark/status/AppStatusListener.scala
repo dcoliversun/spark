@@ -289,7 +289,7 @@ private[spark] class AppStatusListener(
 
   // Note, the blacklisted functions are left here for backwards compatibility to allow
   // new history server to properly read and display older event logs.
-  override def onExecutorBlacklisted(event: SparkListenerExecutorBlacklisted): Unit = {
+  override def onExecutorBlacklisted(event: SparkListenerExecutorExcluded): Unit = {
     updateExecExclusionStatus(event.executorId, true)
   }
 
@@ -298,7 +298,7 @@ private[spark] class AppStatusListener(
   }
 
   override def onExecutorBlacklistedForStage(
-      event: SparkListenerExecutorBlacklistedForStage): Unit = {
+      event: SparkListenerExecutorExcludedForStage): Unit = {
     updateExclusionStatusForStage(event.stageId, event.stageAttemptId, event.executorId)
   }
 
@@ -307,7 +307,7 @@ private[spark] class AppStatusListener(
     updateExclusionStatusForStage(event.stageId, event.stageAttemptId, event.executorId)
   }
 
-  override def onNodeBlacklistedForStage(event: SparkListenerNodeBlacklistedForStage): Unit = {
+  override def onNodeBlacklistedForStage(event: SparkListenerNodeExcludedForStage): Unit = {
     updateNodeExclusionStatusForStage(event.stageId, event.stageAttemptId, event.hostId)
   }
 
@@ -340,7 +340,7 @@ private[spark] class AppStatusListener(
     maybeUpdate(stage, now)
   }
 
-  override def onExecutorUnblacklisted(event: SparkListenerExecutorUnblacklisted): Unit = {
+  override def onExecutorUnblacklisted(event: SparkListenerExecutorUnexcluded): Unit = {
     updateExecExclusionStatus(event.executorId, false)
   }
 
@@ -348,7 +348,7 @@ private[spark] class AppStatusListener(
     updateExecExclusionStatus(event.executorId, false)
   }
 
-  override def onNodeBlacklisted(event: SparkListenerNodeBlacklisted): Unit = {
+  override def onNodeBlacklisted(event: SparkListenerNodeExcluded): Unit = {
     updateNodeExcluded(event.hostId, true)
   }
 
@@ -356,7 +356,7 @@ private[spark] class AppStatusListener(
     updateNodeExcluded(event.hostId, true)
   }
 
-  override def onNodeUnblacklisted(event: SparkListenerNodeUnblacklisted): Unit = {
+  override def onNodeUnblacklisted(event: SparkListenerNodeUnexcluded): Unit = {
     updateNodeExcluded(event.hostId, false)
   }
 

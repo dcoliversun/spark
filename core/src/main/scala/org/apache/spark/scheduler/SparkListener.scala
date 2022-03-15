@@ -387,7 +387,7 @@ private[spark] trait SparkListenerInterface {
    * Called when the driver excludes an executor for a Spark application.
    */
   @deprecated("use onExecutorExcluded instead", "3.1.0")
-  def onExecutorBlacklisted(executorBlacklisted: SparkListenerExecutorBlacklisted): Unit
+  def onExecutorBlacklisted(executorBlacklisted: SparkListenerExecutorExcluded): Unit
 
   /**
    * Called when the driver excludes an executor for a Spark application.
@@ -399,7 +399,7 @@ private[spark] trait SparkListenerInterface {
    */
   @deprecated("use onExecutorExcludedForStage instead", "3.1.0")
   def onExecutorBlacklistedForStage(
-      executorBlacklistedForStage: SparkListenerExecutorBlacklistedForStage): Unit
+      executorBlacklistedForStage: SparkListenerExecutorExcludedForStage): Unit
 
   /**
    * Called when the driver excludes an executor for a stage.
@@ -411,7 +411,7 @@ private[spark] trait SparkListenerInterface {
    * Called when the driver excludes a node for a stage.
    */
   @deprecated("use onNodeExcludedForStage instead", "3.1.0")
-  def onNodeBlacklistedForStage(nodeBlacklistedForStage: SparkListenerNodeBlacklistedForStage): Unit
+  def onNodeBlacklistedForStage(nodeBlacklistedForStage: SparkListenerNodeExcludedForStage): Unit
 
   /**
    * Called when the driver excludes a node for a stage.
@@ -422,7 +422,7 @@ private[spark] trait SparkListenerInterface {
    * Called when the driver re-enables a previously excluded executor.
    */
   @deprecated("use onExecutorUnexcluded instead", "3.1.0")
-  def onExecutorUnblacklisted(executorUnblacklisted: SparkListenerExecutorUnblacklisted): Unit
+  def onExecutorUnblacklisted(executorUnblacklisted: SparkListenerExecutorUnexcluded): Unit
 
   /**
    * Called when the driver re-enables a previously excluded executor.
@@ -433,7 +433,7 @@ private[spark] trait SparkListenerInterface {
    * Called when the driver excludes a node for a Spark application.
    */
   @deprecated("use onNodeExcluded instead", "3.1.0")
-  def onNodeBlacklisted(nodeBlacklisted: SparkListenerNodeBlacklisted): Unit
+  def onNodeBlacklisted(nodeBlacklisted: SparkListenerNodeExcluded): Unit
 
   /**
    * Called when the driver excludes a node for a Spark application.
@@ -444,7 +444,7 @@ private[spark] trait SparkListenerInterface {
    * Called when the driver re-enables a previously excluded node.
    */
   @deprecated("use onNodeUnexcluded instead", "3.1.0")
-  def onNodeUnblacklisted(nodeUnblacklisted: SparkListenerNodeUnblacklisted): Unit
+  def onNodeUnblacklisted(nodeUnblacklisted: SparkListenerNodeUnexcluded): Unit
 
   /**
    * Called when the driver re-enables a previously excluded node.
@@ -533,33 +533,33 @@ abstract class SparkListener extends SparkListenerInterface {
 
   override def onExecutorRemoved(executorRemoved: SparkListenerExecutorRemoved): Unit = { }
 
-  override def onExecutorBlacklisted(
-      executorBlacklisted: SparkListenerExecutorBlacklisted): Unit = { }
+   def onExecutorBlacklisted(
+      executorBlacklisted: SparkListenerExecutorExcluded): Unit = { }
   override def onExecutorExcluded(
       executorExcluded: SparkListenerExecutorExcluded): Unit = { }
 
-  override def onExecutorBlacklistedForStage(
-      executorBlacklistedForStage: SparkListenerExecutorBlacklistedForStage): Unit = { }
+   def onExecutorBlacklistedForStage(
+      executorBlacklistedForStage: SparkListenerExecutorExcludedForStage): Unit = { }
   override def onExecutorExcludedForStage(
       executorExcludedForStage: SparkListenerExecutorExcludedForStage): Unit = { }
 
-  override def onNodeBlacklistedForStage(
-      nodeBlacklistedForStage: SparkListenerNodeBlacklistedForStage): Unit = { }
+   def onNodeBlacklistedForStage(
+      nodeBlacklistedForStage: SparkListenerNodeExcludedForStage): Unit = { }
   override def onNodeExcludedForStage(
       nodeExcludedForStage: SparkListenerNodeExcludedForStage): Unit = { }
 
-  override def onExecutorUnblacklisted(
-      executorUnblacklisted: SparkListenerExecutorUnblacklisted): Unit = { }
+   def onExecutorUnblacklisted(
+      executorUnblacklisted: SparkListenerExecutorUnexcluded): Unit = { }
   override def onExecutorUnexcluded(
       executorUnexcluded: SparkListenerExecutorUnexcluded): Unit = { }
 
-  override def onNodeBlacklisted(
-      nodeBlacklisted: SparkListenerNodeBlacklisted): Unit = { }
+   def onNodeBlacklisted(
+      nodeBlacklisted: SparkListenerNodeExcluded): Unit = { }
   override def onNodeExcluded(
       nodeExcluded: SparkListenerNodeExcluded): Unit = { }
 
-  override def onNodeUnblacklisted(
-      nodeUnblacklisted: SparkListenerNodeUnblacklisted): Unit = { }
+   def onNodeUnblacklisted(
+      nodeUnblacklisted: SparkListenerNodeUnexcluded): Unit = { }
   override def onNodeUnexcluded(
       nodeUnexcluded: SparkListenerNodeUnexcluded): Unit = { }
 

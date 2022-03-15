@@ -191,7 +191,7 @@ private[spark] class EventLoggingListener(
     logEvent(event, flushLogger = true)
   }
 
-  override def onExecutorBlacklisted(event: SparkListenerExecutorBlacklisted): Unit = {
+   override def onExecutorBlacklisted(event: SparkListenerExecutorExcluded): Unit = {
     logEvent(event, flushLogger = true)
   }
 
@@ -200,7 +200,7 @@ private[spark] class EventLoggingListener(
   }
 
   override def onExecutorBlacklistedForStage(
-      event: SparkListenerExecutorBlacklistedForStage): Unit = {
+      event: SparkListenerExecutorExcludedForStage): Unit = {
     logEvent(event, flushLogger = true)
   }
 
@@ -209,7 +209,7 @@ private[spark] class EventLoggingListener(
     logEvent(event, flushLogger = true)
   }
 
-  override def onNodeBlacklistedForStage(event: SparkListenerNodeBlacklistedForStage): Unit = {
+  override def onNodeBlacklistedForStage(event: SparkListenerNodeExcludedForStage): Unit = {
     logEvent(event, flushLogger = true)
   }
 
@@ -217,7 +217,7 @@ private[spark] class EventLoggingListener(
     logEvent(event, flushLogger = true)
   }
 
-  override def onExecutorUnblacklisted(event: SparkListenerExecutorUnblacklisted): Unit = {
+  override def onExecutorUnblacklisted(event: SparkListenerExecutorUnexcluded): Unit = {
     logEvent(event, flushLogger = true)
   }
 
@@ -226,7 +226,7 @@ private[spark] class EventLoggingListener(
   }
 
 
-  override def onNodeBlacklisted(event: SparkListenerNodeBlacklisted): Unit = {
+  override def onNodeBlacklisted(event: SparkListenerNodeExcluded): Unit = {
     logEvent(event, flushLogger = true)
   }
 
@@ -234,7 +234,7 @@ private[spark] class EventLoggingListener(
     logEvent(event, flushLogger = true)
   }
 
-  override def onNodeUnblacklisted(event: SparkListenerNodeUnblacklisted): Unit = {
+  override def onNodeUnblacklisted(event: SparkListenerNodeUnexcluded): Unit = {
     logEvent(event, flushLogger = true)
   }
 
