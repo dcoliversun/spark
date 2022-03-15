@@ -124,41 +124,29 @@ private[spark] class BasicExecutorFeatureStep(
           // This is to set the SPARK_CONF_DIR to be /opt/spark/conf
           (ENV_SPARK_CONF_DIR, SPARK_CONF_DIR_INTERNAL),
           (ENV_EXECUTOR_ID, kubernetesConf.executorId),
-          (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString)
-        ) ++ kubernetesConf.environment).map { case (k, v) =>
+          (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString),
+          (ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).get))
+          ++ kubernetesConf.environment
+          ++ (if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty)
+                Seq(SecurityManager.ENV_AUTH_SECRET, Option(secMgr.getSecretKey()))
+              else
+                None)
+        ).map { case (k, v) =>
           new EnvVarBuilder()
             .withName(k)
             .withValue(v)
             .build()
         }
       } ++ {
-        Seq(new EnvVarBuilder()
-          .withName(ENV_EXECUTOR_POD_IP)
-          .withValueFrom(new EnvVarSourceBuilder()
-            .withNewFieldRef("v1", "status.podIP")
-            .build())
-          .build())
-      } ++ {
-        Seq(new EnvVarBuilder()
-          .withName(ENV_EXECUTOR_POD_NAME)
-          .withValueFrom(new EnvVarSourceBuilder()
-            .withNewFieldRef("v1", "metadata.name")
-            .build())
-          .build())
-      } ++ {
-        if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty) {
-          Option(secMgr.getSecretKey()).map { authSecret =>
-            new EnvVarBuilder()
-              .withName(SecurityManager.ENV_AUTH_SECRET)
-              .withValue(authSecret)
-              .build()
-          }
-        } else None
-      } ++ {
-        kubernetesConf.get(EXECUTOR_CLASS_PATH).map { cp =>
+        Seq(
+          (ENV_EXECUTOR_POD_IP, "v1", "status.podIP"),
+          (ENV_EXECUTOR_POD_NAME, "v1", "metadata.name")
+        ).map { case (first, second, third) =>
           new EnvVarBuilder()
-            .withName(ENV_CLASSPATH)
-            .withValue(cp)
+            .withName(first)
+            .withValueFrom(new EnvVarSourceBuilder()
+              .withNewFieldRef(second, third)
+              .build())
             .build()
         }
       } ++ {
