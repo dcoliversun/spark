@@ -140,7 +140,7 @@ private[spark] class BasicExecutorFeatureStep(
           (ENV_SPARK_CONF_DIR, SPARK_CONF_DIR_INTERNAL),
           (ENV_EXECUTOR_ID, kubernetesConf.executorId),
           (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString),
-          (ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).get))
+          (ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).orNull))
           ++ kubernetesConf.environment ++ sparkAuthSecretKv ++ allOpts
         ).map { case (k, v) =>
           new EnvVarBuilder()
