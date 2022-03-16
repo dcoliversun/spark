@@ -382,7 +382,10 @@ object KubernetesUtils extends Logging {
     }
   }
 
-  @Since("3.3.0")
+  /**
+   * This function builds the EnvVar objects for each key-value env.
+   */
+  @Since("3.3.1")
   def buildEnvVarsWithKV(env: Seq[(String, String)]): Seq[EnvVar] = {
     if (env.isEmpty) {
       Seq.empty
@@ -397,7 +400,10 @@ object KubernetesUtils extends Logging {
     }
   }
 
-  @Since("3.3.0")
+  /**
+   * This function builds he EnvVar objects for each field ref env.
+   */
+  @Since("3.3.1")
   def buildEnvVarsWithFieldRef(env: Seq[(String, String, String)]): Seq[EnvVar] = {
     if (env.isEmpty) {
       Seq.empty
