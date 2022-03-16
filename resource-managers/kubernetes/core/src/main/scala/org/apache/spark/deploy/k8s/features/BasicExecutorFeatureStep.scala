@@ -116,28 +116,23 @@ private[spark] class BasicExecutorFeatureStep(
       buildExecutorResourcesQuantities(execResources.customResources.values.toSet)
 
     val executorEnv: Seq[EnvVar] = {
-        val sparkAuthSecretKv = if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty
-          && secMgr.getSecretKey() != null) {
-          Seq((SecurityManager.ENV_AUTH_SECRET, secMgr.getSecretKey()))
-        } else {
-          Nil
-        }
-        val a = if (kubernetesConf.get(EXECUTOR_CLASS_PATH).nonEmpty) {
-          Seq((ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).get))
-        } else {
-          Nil
-        }
-        val userOpts = kubernetesConf.get(EXECUTOR_JAVA_OPTIONS).toSeq.flatMap { opts =>
-          val subsOpts = Utils.substituteAppNExecIds(opts, kubernetesConf.appId,
-            kubernetesConf.executorId)
-            Utils.splitCommandString(subsOpts)
-        }
-        val sparkOpts = Utils.sparkJavaOpts(kubernetesConf.sparkConf,
-          SparkConf.isExecutorStartupConf)
-        val allOpts = (userOpts ++ sparkOpts).zipWithIndex.map { case (opt, index) =>
-          (s"$ENV_JAVA_OPT_PREFIX$index", opt)
-        }
-        (Seq(
+      val sparkAuthSecret = if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty) {
+        Seq((SecurityManager.ENV_AUTH_SECRET, secMgr.getSecretKey()))
+      } else {
+        Nil
+      }
+      val userOpts = kubernetesConf.get(EXECUTOR_JAVA_OPTIONS).toSeq.flatMap { opts =>
+        val subsOpts = Utils.substituteAppNExecIds(opts, kubernetesConf.appId,
+          kubernetesConf.executorId)
+          Utils.splitCommandString(subsOpts)
+      }
+      val sparkOpts = Utils.sparkJavaOpts(kubernetesConf.sparkConf,
+        SparkConf.isExecutorStartupConf)
+      val allOpts = (userOpts ++ sparkOpts).zipWithIndex.map { case (opt, index) =>
+        (s"$ENV_JAVA_OPT_PREFIX$index", opt)
+      }
+      KubernetesUtils.buildEnvVarsWithKV(
+        Seq(
           (ENV_DRIVER_URL, driverUrl),
           (ENV_EXECUTOR_CORES, execResources.cores.toString),
           (ENV_EXECUTOR_MEMORY, executorMemoryString),
@@ -145,27 +140,17 @@ private[spark] class BasicExecutorFeatureStep(
           // This is to set the SPARK_CONF_DIR to be /opt/spark/conf
           (ENV_SPARK_CONF_DIR, SPARK_CONF_DIR_INTERNAL),
           (ENV_EXECUTOR_ID, kubernetesConf.executorId),
-          (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString))
-          ++ kubernetesConf.environment ++ sparkAuthSecretKv ++ allOpts ++ a
-        ).map { case (k, v) =>
-          new EnvVarBuilder()
-            .withName(k)
-            .withValue(v)
-            .build()
-        }
-    } ++ {
-        Seq(
-          (ENV_EXECUTOR_POD_IP, "v1", "status.podIP"),
-          (ENV_EXECUTOR_POD_NAME, "v1", "metadata.name")
-        ).map { case (i, j, v) =>
-          new EnvVarBuilder()
-            .withName(i)
-            .withValueFrom(new EnvVarSourceBuilder()
-              .withNewFieldRef(j, v)
-              .build())
-            .build()
-        }
-      }
+          (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString),
+          (ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).orNull))
+          ++ kubernetesConf.environment
+          ++ sparkAuthSecret
+          ++ allOpts) ++
+        KubernetesUtils.buildEnvVarsWithFieldRef(
+          Seq(
+            (ENV_EXECUTOR_POD_IP, "v1", "status.podIP"),
+            (ENV_EXECUTOR_POD_NAME, "v1", "metadata.name")
+          ))
+    }
     executorEnv.find(_.getName == ENV_EXECUTOR_DIRS).foreach { e =>
       e.setValue(e.getValue
         .replaceAll(ENV_APPLICATION_ID, kubernetesConf.appId)
