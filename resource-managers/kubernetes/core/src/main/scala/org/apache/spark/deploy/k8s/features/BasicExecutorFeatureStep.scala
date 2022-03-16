@@ -116,8 +116,13 @@ private[spark] class BasicExecutorFeatureStep(
       buildExecutorResourcesQuantities(execResources.customResources.values.toSet)
 
     val executorEnv: Seq[EnvVar] = {
-        val sparkAuthSecretKv = if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty) {
+        val sparkAuthSecretKv = if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty && secMgr.getSecretKey() != null) {
           Seq((SecurityManager.ENV_AUTH_SECRET, secMgr.getSecretKey()))
+        } else {
+          Nil
+        }
+        val a = if (kubernetesConf.get(EXECUTOR_CLASS_PATH).nonEmpty) {
+          Seq((ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).get))
         } else {
           Nil
         }
@@ -139,9 +144,8 @@ private[spark] class BasicExecutorFeatureStep(
           // This is to set the SPARK_CONF_DIR to be /opt/spark/conf
           (ENV_SPARK_CONF_DIR, SPARK_CONF_DIR_INTERNAL),
           (ENV_EXECUTOR_ID, kubernetesConf.executorId),
-          (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString),
-          (ENV_CLASSPATH, kubernetesConf.get(EXECUTOR_CLASS_PATH).orNull))
-          ++ kubernetesConf.environment ++ sparkAuthSecretKv ++ allOpts
+          (ENV_RESOURCE_PROFILE_ID, resourceProfile.id.toString))
+          ++ kubernetesConf.environment ++ sparkAuthSecretKv ++ allOpts ++ a
         ).map { case (k, v) =>
           new EnvVarBuilder()
             .withName(k)
