@@ -116,7 +116,8 @@ private[spark] class BasicExecutorFeatureStep(
       buildExecutorResourcesQuantities(execResources.customResources.values.toSet)
 
     val executorEnv: Seq[EnvVar] = {
-        val sparkAuthSecretKv = if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty && secMgr.getSecretKey() != null) {
+        val sparkAuthSecretKv = if (kubernetesConf.get(AUTH_SECRET_FILE_EXECUTOR).isEmpty
+          && secMgr.getSecretKey() != null) {
           Seq((SecurityManager.ENV_AUTH_SECRET, secMgr.getSecretKey()))
         } else {
           Nil
