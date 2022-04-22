@@ -158,7 +158,7 @@ class MountVolumesFeatureStepSuite extends SparkFunSuite {
       KubernetesPVCVolumeConf("testClaimName")
     )
     val conf = new SparkConf()
-    conf.set(EXECUTOR_INSTANCES, "2")
+    conf.set(EXECUTOR_INSTANCES.key, "2")
     val executorConf =
       KubernetesTestConf.createExecutorConf(sparkConf = conf, volumes = Seq(volumeConf))
     val executorStep = new MountVolumesFeatureStep(executorConf)
