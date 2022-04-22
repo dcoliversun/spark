@@ -148,6 +148,21 @@ class MountVolumesFeatureStepSuite extends SparkFunSuite {
     assert(executorPVC.getClaimName.endsWith("-exec-1-pvc-0"))
   }
 
+  test("persistentVolumeClaims claimName must be onDemand when multiple executors") {
+    val volumeConf = KubernetesVolumeSpec(
+      "testVolume",
+      "/tmp",
+      "",
+      true,
+      KubernetesPVCVolumeConf("testClaimName")
+    )
+
+    val executorConf = KubernetesTestConf.createExecutorConf(volumes = Seq(volumeConf))
+    val executorStep = new MountVolumesFeatureStep(executorConf)
+    assertThrows(classOf[IllegalArgumentException],
+      () -> executorStep.configurePod(SparkPod.initialPod()))
+  }
+
   test("Mounts emptyDir") {
     val volumeConf = KubernetesVolumeSpec(
       "testVolume",

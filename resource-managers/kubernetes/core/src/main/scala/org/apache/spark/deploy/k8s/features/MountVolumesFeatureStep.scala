@@ -23,6 +23,7 @@ import io.fabric8.kubernetes.api.model._
 
 import org.apache.spark.deploy.k8s._
 import org.apache.spark.deploy.k8s.Constants.{ENV_EXECUTOR_ID, SPARK_APP_ID_LABEL}
+import org.apache.spark.internal.config.EXECUTOR_INSTANCES
 
 private[spark] class MountVolumesFeatureStep(conf: KubernetesConf)
   extends KubernetesFeatureConfigStep {
@@ -71,6 +72,7 @@ private[spark] class MountVolumesFeatureStep(conf: KubernetesConf)
         case KubernetesPVCVolumeConf(claimNameTemplate, storageClass, size) =>
           val claimName = conf match {
             case c: KubernetesExecutorConf =>
+              checkPVCOnDemandWhenMultiExecutors(claimNameTemplate)
               claimNameTemplate
                 .replaceAll(PVC_ON_DEMAND,
                   s"${conf.resourceNamePrefix}-exec-${c.executorId}$PVC_POSTFIX-$i")
@@ -119,6 +121,15 @@ private[spark] class MountVolumesFeatureStep(conf: KubernetesConf)
 
   override def getAdditionalKubernetesResources(): Seq[HasMetadata] = {
     additionalResources.toSeq
+  }
+
+  private def checkPVCOnDemandWhenMultiExecutors(claimName: String) = {
+    val executorInstances = conf.get(EXECUTOR_INSTANCES).get
+    if (claimName != PVC_ON_DEMAND && executorInstances > 1) {
+      throw new IllegalArgumentException("ClaimName of PVC must be " +
+        PVC_ON_DEMAND +
+        " when multiple executors required")
+    }
   }
 }
 
