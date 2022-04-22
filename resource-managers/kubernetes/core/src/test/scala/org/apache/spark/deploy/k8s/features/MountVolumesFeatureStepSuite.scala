@@ -18,8 +18,9 @@ package org.apache.spark.deploy.k8s.features
 
 import scala.collection.JavaConverters._
 
-import org.apache.spark.SparkFunSuite
+import org.apache.spark.{SparkConf, SparkFunSuite}
 import org.apache.spark.deploy.k8s._
+import org.apache.spark.internal.config.EXECUTOR_INSTANCES
 
 class MountVolumesFeatureStepSuite extends SparkFunSuite {
   test("Mounts hostPath volumes") {
@@ -153,11 +154,13 @@ class MountVolumesFeatureStepSuite extends SparkFunSuite {
       "testVolume",
       "/tmp",
       "",
-      true,
+      mountReadOnly = true,
       KubernetesPVCVolumeConf("testClaimName")
     )
-
-    val executorConf = KubernetesTestConf.createExecutorConf(volumes = Seq(volumeConf))
+    val conf = new SparkConf()
+    conf.set(EXECUTOR_INSTANCES, "2")
+    val executorConf =
+      KubernetesTestConf.createExecutorConf(sparkConf = conf, volumes = Seq(volumeConf))
     val executorStep = new MountVolumesFeatureStep(executorConf)
     assertThrows(classOf[IllegalArgumentException],
       () -> executorStep.configurePod(SparkPod.initialPod()))
