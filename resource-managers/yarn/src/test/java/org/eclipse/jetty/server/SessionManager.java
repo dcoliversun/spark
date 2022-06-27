@@ -131,17 +131,19 @@ public interface SessionManager extends LifeCycle {
    *                 but they are expected to at least handle HttpSessionActivationListener,
    *                 HttpSessionAttributeListener,
    *                 HttpSessionBindingListener and HttpSessionListener.
+   * @return true if the listener was added
    * @see #removeEventListener(EventListener)
    */
-  void addEventListener(EventListener listener);
+  boolean addEventListener(EventListener listener);
 
   /**
    * Removes an event listener for for session-related events.
    *
    * @param listener the session event listener to remove
+   * @return true if the listener was removed
    * @see #addEventListener(EventListener)
    */
-  void removeEventListener(EventListener listener);
+  boolean removeEventListener(EventListener listener);
 
   /**
    * Removes all event listeners for session-related events.
