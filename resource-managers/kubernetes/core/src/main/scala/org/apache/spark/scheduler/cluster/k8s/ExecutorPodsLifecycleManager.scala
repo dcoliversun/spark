@@ -270,7 +270,7 @@ private object ExecutorPodsLifecycleManager {
       case 255 => "(exit-1, your guess is as good as mine)"
       case _ => "(unexpected)"
     }
-    s"${code}${humanStr}"
+    s"$code$humanStr"
   }
 
   def executorInactivationFn: UnaryOperator[Pod] = (p: Pod) => new PodBuilder(p)
