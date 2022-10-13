@@ -128,6 +128,12 @@ jobs:
     if: fromJson(needs.precondition.outputs.required).k8s-integration-tests == 'true'
     name: Run Spark on Kubernetes c test
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        chaos-test:
+          - test
+          - schedule
     steps:
       - name: Checkout Spark repository
         uses: actions/checkout@v2
@@ -182,7 +188,7 @@ jobs:
           kubectl get pods -n kube-system
       - name: Encode chaos-mesh action
         run: |
-          echo CFG_BASE64=$(base64 -w 0 $GITHUB_WORKSPACE/dev/infra/chaos/test.yaml) >> $GITHUB_ENV
+          echo CFG_BASE64=$(base64 -w 0 $GITHUB_WORKSPACE/dev/infra/chaos/${{ matrix.chaos-test }}.yaml) >> $GITHUB_ENV
       - name: Run chaos mesh action
         uses: chaos-mesh/chaos-mesh-action@master
         env:

@@ -1,15 +1,12 @@
-# nonk8s
 apiVersion: chaos-mesh.org/v1alpha1
 kind: PodChaos
 metadata:
   name: pod-failure
-  namespace: default
+  namespace: chaos-testing
 spec:
   action: pod-failure
   mode: one
-  duration: "60s"
+  duration: "20s"
   selector:
     labelSelectors:
       "app.kubernetes.io/component": "controller-manager"
-  scheduler:
-    cron: "@every 5m"
