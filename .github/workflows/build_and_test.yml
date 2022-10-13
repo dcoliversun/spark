@@ -187,7 +187,7 @@ jobs:
         uses: chaos-mesh/chaos-mesh-action@master
         env:
           CFG_BASE64: ${{ env.CFG_BASE64 }}
-          CHAOS_MESH_VERSION: v1.0.0
+          CHAOS_MESH_VERSION: v2.4.0
       - name: Run Spark on K8S integration test (With driver cpu 0.5, executor cpu 0.2 limited)
         run: |
             # Prepare PV test
