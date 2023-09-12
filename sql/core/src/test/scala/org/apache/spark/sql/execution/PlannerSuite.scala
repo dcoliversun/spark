@@ -1277,7 +1277,7 @@ class PlannerSuite extends SharedSparkSession with AdaptiveSparkPlanHelper {
           case s: ShuffleExchangeExec if s.outputPartitioning == SinglePartition => s
         }.size == 1)
     }
-    checkSinglePartitioning(sql("SELECT /*+ REPARTITION(1) */ * FROM VALUES(1),(2),(3) AS t(c)"))
+    checkSinglePartitioning(sql("SELECT /*+ COALESCE(1) */ * FROM VALUES(1),(2),(3) AS t(c)"))
     checkSinglePartitioning(sql("SELECT /*+ REPARTITION(1, c) */ * FROM VALUES(1),(2),(3) AS t(c)"))
   }
 
